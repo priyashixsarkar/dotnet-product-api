@@ -1,4 +1,4 @@
-# 📦 Product CRUD REST API
+# Product CRUD REST API
 
 This project is a high-performance **RESTful API** developed with **ASP.NET Core (.NET 8)** following **Clean Architecture** principles. It provides a secure, scalable backend solution for managing product inventory with nested item resources, utilizing industry-standard patterns for authentication, data validation, and structured logging.
 
@@ -111,7 +111,7 @@ To ensure the project remains scalable, testable, and easy to maintain, it follo
 
 ---
 
-## ⚙️ Getting Started
+## Getting Started
 
 ### Prerequisites
 - [.NET 8.0 SDK](https://dotnet.microsoft.com/download/dotnet/8.0)
@@ -150,11 +150,11 @@ To ensure the project remains scalable, testable, and easy to maintain, it follo
 
 ---
 
-## 📝 API Endpoints
+## API Endpoints
 
 > **Base URL:** `http://localhost:5272/api/v1`
 
-### 🔐 Authentication
+### Authentication
 
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :--- |
@@ -192,7 +192,7 @@ Content-Type: application/json
 
 ---
 
-### 📦 Products
+### Products
 
 | Method | Endpoint | Description | Auth Required | Role |
 | :--- | :--- | :--- | :--- | :--- |
@@ -236,7 +236,7 @@ GET /api/v1/products?pageNumber=1&pageSize=10
 
 ---
 
-### 📋 Items (Nested under Products)
+### Items (Nested under Products)
 
 | Method | Endpoint | Description | Auth Required |
 | :--- | :--- | :--- | :--- |
@@ -259,7 +259,7 @@ Content-Type: application/json
 
 ---
 
-## 🧪 Running the Tests
+## Running the Tests
 
 The project includes three test suites covering all layers:
 
@@ -275,7 +275,7 @@ dotnet test
 
 ---
 
-## 🐳 Docker Configuration
+## Docker Configuration
 
 The `docker-compose.yml` orchestrates two services:
 
