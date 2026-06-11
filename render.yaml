@@ -1,0 +1,30 @@
+databases:
+  - name: productdb
+    plan: free
+    databaseName: productdb
+    user: productapi
+
+services:
+  - type: web
+    name: product-crud-api
+    plan: free
+    runtime: docker
+    dockerfilePath: ./src/API/Dockerfile
+    dockerContext: .
+    envVars:
+      - key: ConnectionStrings__DefaultConnection
+        fromDatabase:
+          name: productdb
+          property: connectionString
+      - key: JwtSettings__Secret
+        value: CRNProductAPI_SuperSecretJWTKey_2026_MustBeLongEnough!
+      - key: JwtSettings__Issuer
+        value: CRNProductAPI
+      - key: JwtSettings__Audience
+        value: CRNProductAPI_Users
+      - key: JwtSettings__ExpiryMinutes
+        value: "15"
+      - key: JwtSettings__RefreshTokenExpiryDays
+        value: "7"
+      - key: ASPNETCORE_URLS
+        value: http://+:8080

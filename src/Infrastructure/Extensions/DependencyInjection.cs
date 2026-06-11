@@ -12,11 +12,22 @@ namespace Infrastructure.Extensions
     {
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
-            // Configure DbContext
+            // Configure DbContext (auto-detect PostgreSQL vs SQL Server)
+            var connectionString = configuration.GetConnectionString("DefaultConnection") ?? "";
+            
             services.AddDbContext<ApplicationDbContext>(options =>
-                options.UseSqlServer(
-                    configuration.GetConnectionString("DefaultConnection"),
-                    b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName)));
+            {
+                if (connectionString.Contains("Host=") || connectionString.Contains("postgresql", StringComparison.OrdinalIgnoreCase) || connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase))
+                {
+                    options.UseNpgsql(connectionString,
+                        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
+                }
+                else
+                {
+                    options.UseSqlServer(connectionString,
+                        b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
+                }
+            });
 
             // Register repositories and UnitOfWork
             services.AddScoped<IUnitOfWork, UnitOfWork>();
