@@ -10,14 +10,33 @@ namespace Infrastructure.Extensions
 {
     public static class DependencyInjection
     {
+        // Converts postgres://user:pass@host:port/db URL to Npgsql key=value format
+        private static string ConvertPostgresUrlToConnectionString(string url)
+        {
+            var uri = new Uri(url);
+            var userInfo = uri.UserInfo.Split(':');
+            var host = uri.Host;
+            var port = uri.Port > 0 ? uri.Port : 5432;
+            var database = uri.AbsolutePath.TrimStart('/');
+            var username = userInfo[0];
+            var password = userInfo.Length > 1 ? userInfo[1] : "";
+            return $"Host={host};Port={port};Database={database};Username={username};Password={password};SSL Mode=Require;Trust Server Certificate=true";
+        }
+
         public static IServiceCollection AddInfrastructureServices(this IServiceCollection services, IConfiguration configuration)
         {
             // Configure DbContext (auto-detect PostgreSQL vs SQL Server)
-            var connectionString = configuration.GetConnectionString("DefaultConnection") ?? "";
-            
+            var rawConnectionString = configuration.GetConnectionString("DefaultConnection") ?? "";
+
+            // Convert postgres:// URL format (used by Render) to Npgsql key=value format
+            var connectionString = (rawConnectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase) ||
+                                    rawConnectionString.StartsWith("postgresql://", StringComparison.OrdinalIgnoreCase))
+                ? ConvertPostgresUrlToConnectionString(rawConnectionString)
+                : rawConnectionString;
+
             services.AddDbContext<ApplicationDbContext>(options =>
             {
-                if (connectionString.Contains("Host=") || connectionString.Contains("postgresql", StringComparison.OrdinalIgnoreCase) || connectionString.StartsWith("postgres://", StringComparison.OrdinalIgnoreCase))
+                if (connectionString.Contains("Host=") || connectionString.Contains("postgresql", StringComparison.OrdinalIgnoreCase))
                 {
                     options.UseNpgsql(connectionString,
                         b => b.MigrationsAssembly(typeof(ApplicationDbContext).Assembly.FullName));
